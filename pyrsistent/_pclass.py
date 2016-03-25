@@ -135,6 +135,10 @@ class PClass(CheckedType):
         return transform(self, transformations)
 
     def __eq__(self, other):
+        if self is other:
+            return True
+        if hash(self) != hash(other):
+            return False
         if isinstance(other, self.__class__):
             for name in self._pclass_fields:
                 if getattr(self, name, _MISSING_VALUE) != getattr(other, name, _MISSING_VALUE):
