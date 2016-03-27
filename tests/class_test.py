@@ -117,6 +117,8 @@ def test_implements_proper_equality_based_on_equality_of_fields():
     p2 = Point(x=3)
     p3 = Point(x=1, y=2)
 
+    assert p1 == p1
+    assert not p1 != p1
     assert p1 == p3
     assert not p1 != p3
     assert p1 != p2
