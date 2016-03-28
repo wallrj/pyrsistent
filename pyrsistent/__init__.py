@@ -1,4 +1,21 @@
 # -*- coding: utf-8 -*-
+"""
+This is a ClusterHQ fork of pyrsistent.
+
+It is used as a temporary repository of
+changes while we work on getting them integrated
+upstream. These changes should be decent logical
+units -- this branch is used to collect them all.
+
+THIS SHOULD NEVER BE SUBMITTED UPSTREAM.
+IF THIS APPEARS IN A PR TO PYRSISTENT,
+IT IS A BAD PR AND SHOULD BE REJECTED OR FIXED.
+
+However, this is perfectly OK to be in
+distributions of flocker, in case there are
+needed fixes which have not been merged into
+a released version of pyrsistent yet.
+"""
 
 from pyrsistent._pmap import pmap, m, PMap
 
