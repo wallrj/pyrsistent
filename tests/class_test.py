@@ -125,6 +125,64 @@ def test_implements_proper_equality_based_on_equality_of_fields():
     assert not p1 == p2
 
 
+def test_equality_of_unhashable_pclasses():
+    class MyClass(PClass):
+        a = field()
+    o1 = MyClass(a=dict(x=1))
+    o2 = MyClass(a=dict(x=1))
+
+    assert o1 == o2
+    assert not o1 != o2
+
+
+def test_cross_type_equals():
+    class HashCloner(PClass):
+        other = field()
+
+        def __hash__(self):
+            return hash(self.other)
+
+    class HashNegater(PClass):
+        other = field()
+
+        def __hash__(self):
+            return 1 - hash(self.other)
+
+    class TotalCloner(PClass):
+        other = field()
+
+        def __hash__(self):
+            return hash(self.other)
+
+        def __eq__(self, other):
+            return self.other == other
+
+    class HashNegatedEqualCloner(PClass):
+        other = field()
+
+        def __hash__(self):
+            return 1 - hash(self.other)
+
+        def __eq__(self, other):
+            return self.other == other
+
+    p = Point(x=1, y=2)
+    p_like = HashCloner(other=p)
+    p_dislike = HashNegater(other=p)
+    p_exactly_like = TotalCloner(other=p)
+    p_mis_hashed = HashNegatedEqualCloner(other=p)
+
+    assert not p == p_like
+    assert p != p_like
+    assert not p == p_dislike
+    assert p != p_dislike
+
+    assert p == p_exactly_like
+    assert not p != p_exactly_like
+    assert p == p_mis_hashed
+    assert not p != p_mis_hashed
+
+
 def test_is_hashable():
     p1 = Point(x=1, y=2)
     p2 = Point(x=3, y=2)
