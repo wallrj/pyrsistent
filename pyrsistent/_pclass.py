@@ -12,7 +12,7 @@ class PClassMeta(type):
     def __new__(mcs, name, bases, dct):
         set_fields(dct, bases, name='_pclass_fields')
         store_invariants(dct, bases, '_pclass_invariants', '__invariant__')
-        dct['__slots__'] = ('_pclass_frozen',) + tuple(key for key in dct['_pclass_fields'])
+        dct['__slots__'] = ('_pclass_frozen','_pclass_hash',) + tuple(key for key in dct['_pclass_fields'])
 
         # There must only be one __weakref__ entry in the inheritance hierarchy,
         # lets put it on the top level class.
@@ -68,6 +68,10 @@ class PClass(CheckedType):
 
         check_global_invariants(result, cls._pclass_invariants)
 
+        try:
+            result._pclass_hash = hash(tuple((key, getattr(result, key, _MISSING_VALUE)) for key in result._pclass_fields))
+        except:
+           result._pclass_hash = None
         result._pclass_frozen = True
         return result
 
@@ -160,8 +164,9 @@ class PClass(CheckedType):
         return not self == other
 
     def __hash__(self):
-        # May want to optimize this by caching the hash somehow
-        return hash(tuple((key, getattr(self, key, _MISSING_VALUE)) for key in self._pclass_fields))
+        if self._pclass_hash is None:
+            return hash(tuple((key, getattr(self, key, _MISSING_VALUE)) for key in self._pclass_fields))
+        return self._pclass_hash
 
     def __setattr__(self, key, value):
         if getattr(self, '_pclass_frozen', False):

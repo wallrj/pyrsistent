@@ -198,6 +198,18 @@ def test_is_hashable():
     assert Point(x=10) not in d
 
 
+def test_is_not_hashable_if_fields_are_not():
+    class MyClass(PClass):
+        a = field()
+    b = MyClass(a=dict(x=1))
+    try:
+        hash(b)
+        assert False
+    except TypeError as e:
+        assert "unhashable" in str(e)
+        assert "dict" in str(e)
+
+
 def test_supports_nested_transformation():
     l1 = Line(p1=Point(x=2, y=1), p2=Point(x=20, y=10))
 
