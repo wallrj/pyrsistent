@@ -137,19 +137,24 @@ class PClass(CheckedType):
     def __eq__(self, other):
         if self is other:
             return True
-        if isinstance(other, self.__class__):
-            try:
-                if hash(self) != hash(other):
-                    return False
-            except:
-                pass
-            for name in self._pclass_fields:
-                if getattr(self, name, _MISSING_VALUE) != getattr(other, name, _MISSING_VALUE):
-                    return False
 
-            return True
+        if not isinstance(other, self.__class__):
+            return NotImplemented
 
-        return NotImplemented
+        try:
+            self_hash = hash(self)
+            other_hash = hash(other)
+        except:
+            pass
+        else:
+            if self_hash != other_hash:
+                return False
+
+        for name in self._pclass_fields:
+            if getattr(self, name, _MISSING_VALUE) != getattr(other, name, _MISSING_VALUE):
+                return False
+
+        return True
 
     def __ne__(self, other):
         return not self == other
